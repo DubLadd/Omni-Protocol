@@ -1,0 +1,1510 @@
+<html lang="en" style="--color-accent-yellow: #00ff00; --color-accent-magenta: #ff00ff; --color-accent-purple: #8a2be2;"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghekko OMNI-Protocol Dashboard V3.1: PARTICLE PATCH</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet">
+    <!-- Load Three.js for 3D Visualization -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --color-bg-dark: #111827;
+            --color-accent-yellow: #FFEC43;
+            --color-accent-magenta: #FF00FF;
+            --color-accent-purple: #8A2BE2;
+            --color-text-neon: #E5E7EB;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-neon);
+            overflow-x: hidden;
+        }
+        .shadow-neon-yellow { box-shadow: 0 0 10px var(--color-accent-yellow); }
+        .shadow-neon-magenta { box-shadow: 0 0 10px var(--color-accent-magenta); }
+        .shadow-neon-purple { box-shadow: 0 10px 10px var(--color-accent-purple); }
+        .border-accent-yellow { border-color: var(--color-accent-yellow); }
+        .text-accent-yellow { color: var(--color-accent-yellow); }
+        .bg-accent-yellow { background-color: var(--color-accent-yellow); }
+        .border-accent-magenta { border-color: var(--color-accent-magenta); }
+        .text-accent-magenta { color: var(--color-accent-magenta); }
+        .border-accent-purple { border-color: var(--color-accent-purple); }
+        .text-accent-purple { color: var(--color-accent-purple); }
+        .bg-sidebar-dark { background-color: #1F2937; }
+
+        .orb-tap-effect {
+            animation: pulse-ring 0.6s cubic-bezier(0, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        #omni-conceptual-space {
+            width: 100%;
+            height: 400px;
+            background-color: var(--color-bg-dark);
+            border: 2px solid var(--color-accent-purple);
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            position: relative;
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        
+        <!-- Sidebar: Vault Status, Controls, and Palette -->
+        <aside class="w-full md:w-80 bg-sidebar-dark p-6 border-r border-accent-purple/50 z-10">
+            <h1 class="text-3xl font-extrabold text-accent-yellow mb-2 tracking-wide">DEVFORGE PRO</h1>
+            <h2 class="text-xs text-accent-purple mb-6">JESUS-GHEKKO OMNI-PROTOCOL V.3.1 (PARTICLES)</h2>
+            
+            <!-- Vault Status -->
+            <div class="mb-8">
+                <h3 class="text-sm font-bold uppercase text-accent-magenta mb-3 border-b border-accent-purple pb-1">VAULT STATUS</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-3 bg-accent-purple/20 rounded-lg">
+                        <p class="text-xs text-accent-purple">SESSIONS</p>
+                        <p id="sessions-display" class="text-xl font-bold text-accent-yellow">1</p>
+                    </div>
+                    <div class="p-3 bg-accent-purple/20 rounded-lg">
+                        <p class="text-xs text-accent-purple">ACTIVE AGENTS</p>
+                        <p id="agents-display" class="text-xl font-bold text-accent-yellow">5</p>
+                    </div>
+                    <div class="p-3 bg-accent-purple/20 rounded-lg">
+                        <p class="text-xs text-accent-purple">TEST REFILLS LEFT</p>
+                        <p id="refills-display" class="text-xl font-bold text-accent-yellow">3</p>
+                    </div>
+                    <div class="p-3 bg-accent-purple/20 rounded-lg">
+                        <p class="text-xs text-accent-purple">AETHERIC COINS</p>
+                        <p id="coins-display" class="text-xl font-bold text-accent-yellow">500000.00</p>
+                    </div>
+                    <!-- Stat for Passive Yield Rate -->
+                    <div class="col-span-2 p-3 bg-accent-magenta/20 rounded-lg border border-accent-magenta">
+                        <p class="text-xs text-accent-magenta">PASSIVE YIELD RATE (COINS/SEC)</p>
+                        <p id="passive-yield-rate-display" class="text-2xl font-bold text-accent-yellow">2.50</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Palette Generator -->
+            <div class="mb-8">
+                <h3 class="text-sm font-bold uppercase text-accent-magenta mb-3 border-b border-accent-purple pb-1">PALETTE GENERATOR</h3>
+                <label class="block text-xs text-accent-yellow mt-2">Accent Yellow (Main)</label>
+                <input type="color" id="palette-yellow" value="#FFEC43" class="w-full h-8 rounded-md mb-2">
+                <label class="block text-xs text-accent-magenta mt-2">Accent Magenta (Secondary)</label>
+                <input type="color" id="palette-magenta" value="#FF00FF" class="w-full h-8 rounded-md mb-2">
+                <label class="block text-xs text-accent-purple mt-2">Accent Purple (Lines)</label>
+                <input type="color" id="palette-purple" value="#8A2BE2" class="w-full h-8 rounded-md mb-2">
+                
+                <button onclick="applyNewPalette()" class="w-full mt-3 py-2 bg-accent-purple text-bg-dark font-bold rounded-lg hover:bg-accent-purple/70 transition-colors">
+                    APPLY NEW PALETTE
+                </button>
+            </div>
+            
+            <!-- Quick Tools (SYSTEM CONTROLS) -->
+            <div class="mb-8">
+                <h3 class="text-sm font-bold uppercase text-accent-magenta mb-3 border-b border-accent-purple pb-1">SYSTEM CONTROLS</h3>
+
+                <!-- Gemini API Key (stored only in this browser's localStorage) -->
+                <div class="mb-3">
+                    <label class="block text-[10px] text-accent-yellow mb-1">GEMINI API KEY (stored locally only)</label>
+                    <input type="password" id="gemini-api-key-input" placeholder="Paste your Gemini API key..." class="w-full bg-bg-dark text-xs p-2 rounded border border-accent-purple text-text-neon focus:ring-1 focus:ring-accent-yellow">
+                    <p class="text-[10px] text-accent-purple/80 mt-1">Required for AI Audit, Synthesis, Craving Calc, Image Forge &amp; Agent Terminal. Get one at <span class="text-accent-yellow">aistudio.google.com</span>. Never leaves your browser except to call Google's API directly.</p>
+                </div>
+
+                <!-- Supported Extensions Notice -->
+                <div class="mb-3 text-[10px] text-accent-purple/90 bg-accent-purple/10 p-2 rounded border border-accent-purple/30">
+                    <span class="font-bold text-accent-yellow">SUPPORTED FILES:</span> .txt, .json, .md, .js, .html, .py, .csv, .css
+                </div>
+
+                <ul class="space-y-2 text-sm">
+                    <input type="file" id="file-upload-input" onchange="handleFileUpload(event)" accept=".html,.txt,.json,.js,.md,.csv,.py,.css" style="display: none;">
+                    <li>
+                        <button onclick="triggerFileUpload()" class="w-full text-left py-2 px-3 rounded-md bg-accent-yellow/10 text-accent-yellow transition-colors flex justify-between items-center border border-accent-yellow">
+                            UPLOAD FILE (BLUEPRINT / JSON) 📁
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="connectDAppGateway()" class="w-full text-left py-2 px-3 rounded-md transition-colors flex justify-between items-center border bg-green-500/10 text-green-500 border-green-500">DAPP GATEWAY: CONNECTED ✅</button>
+                    </li>
+                    <li>
+                        <button onclick="showSection('memories-timeline')" class="w-full text-left py-2 px-3 rounded-md hover:bg-accent-purple/10 transition-colors flex justify-between items-center">
+                            MEMORY TIMELINE <span class="text-xs text-accent-purple">Ctrl+S</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="showSection('grounded-oracle-section')" class="w-full text-left py-2 px-3 rounded-md hover:bg-accent-yellow/10 text-accent-yellow transition-colors flex justify-between items-center border border-accent-yellow/30">
+                            🌐 GROUNDED ORACLE <span class="text-xs text-accent-yellow">SEARCH</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="showSection('image-forge-section')" class="w-full text-left py-2 px-3 rounded-md hover:bg-accent-magenta/10 text-accent-magenta transition-colors flex justify-between items-center border border-accent-magenta/30">
+                            🎨 CONCEPT IMAGE FORGE <span class="text-xs text-accent-magenta">IMAGEN 4</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="showSection('agent-terminal-section')" class="w-full text-left py-2 px-3 rounded-md hover:bg-accent-purple/20 text-accent-purple transition-colors flex justify-between items-center border border-accent-purple/50">
+                            💬 AGENT TERMINAL <span class="text-xs text-accent-purple">LLM CHAT</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="downloadVaultSnapshot()" class="w-full mt-2 py-2 bg-accent-yellow/30 text-accent-yellow font-bold rounded-lg border border-accent-yellow hover:bg-accent-yellow/50 transition-colors flex justify-center items-center">
+                            💾 DOWNLOAD VAULT SNAPSHOT
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Local Storage Session Manager -->
+                <div class="mt-6 pt-4 border-t border-accent-purple/30">
+                    <h4 class="text-xs font-bold uppercase text-accent-yellow mb-2">LOCAL SESSION MANAGER</h4>
+                    <select id="session-select" onchange="switchNamedSession(this.value)" class="w-full bg-bg-dark text-xs p-2 rounded border border-accent-purple text-text-neon mb-2 focus:ring-1 focus:ring-accent-yellow">
+                        <option value="current">Current Active Session</option>
+                    </select>
+                    <div class="flex gap-2">
+                        <button onclick="saveCurrentNamedSession()" class="flex-1 py-1 px-2 text-xs bg-accent-purple/30 text-accent-yellow border border-accent-purple rounded hover:bg-accent-purple/50 font-semibold">
+                            + Save Snapshot
+                        </button>
+                        <button onclick="resetVaultPrompt()" class="py-1 px-2 text-xs bg-red-900/30 text-red-400 border border-red-800 rounded hover:bg-red-800/50">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 p-6 overflow-y-auto">
+
+            <!-- SECTION 1: OMNI-PROTOCOL INPUT CHAMBER -->
+            <section id="omni-protocol-chamber" class="border-b border-accent-purple/50 pb-8 mb-8">
+                <h2 class="text-3xl font-bold text-accent-yellow uppercase tracking-wider mb-4">OMNI-PROTOCOL: UNIVERSAL INPUT CHAMBER</h2>
+                <p class="text-sm text-text-neon mb-4">
+                    Feed the OMNI-Protocol media streams (.txt, .json, .md, .js, .html, .py, .csv). Drag & drop files directly onto the chamber below.
+                </p>
+                
+                <div id="drop-zone" class="relative">
+                    <textarea id="omni-input-chamber" rows="8" placeholder="Command: Protocol, begin universal media categorization (Paste content or drag & drop files here)..." class="w-full p-4 bg-bg-dark border border-accent-magenta rounded-lg text-text-neon focus:ring-2 focus:ring-accent-magenta focus:border-accent-magenta transition-all"></textarea>
+                    
+                    <!-- File metadata badge -->
+                    <div id="file-info-badge" class="hidden absolute top-3 right-3 bg-accent-purple/90 border border-accent-yellow text-xs px-3 py-1 rounded-md text-white flex items-center gap-2 shadow-lg">
+                        <span id="file-info-text">filename.txt</span>
+                        <button onclick="clearUploadedFile()" class="font-bold text-accent-yellow hover:text-white" title="Clear input">✕</button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row justify-between items-center mt-4">
+                    <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                        <button id="btn-process-omni" onclick="processOmniInput()" class="px-6 py-3 bg-accent-magenta text-bg-dark font-bold rounded-lg shadow-neon-magenta hover:bg-accent-magenta/80 transition-colors duration-300">
+                            INITIATE OMNI CATEGORIZATION
+                        </button>
+                        <button id="btn-audit-omni" onclick="auditOmniInput()" class="px-6 py-3 bg-accent-purple text-bg-dark font-bold rounded-lg shadow-neon-purple hover:bg-accent-purple/80 transition-colors duration-300 flex items-center justify-center gap-2">
+                            <span>🤖 AI DEEP AUDIT (GEMINI)</span>
+                        </button>
+                    </div>
+                    <p id="status-display" class="text-sm font-semibold text-accent-purple mt-3 md:mt-0">STATUS: READY FOR INPUT.</p>
+                </div>
+
+                <!-- Container for AI Content Audit Output -->
+                <div id="omni-audit-output" class="mt-4 p-4 bg-sidebar-dark border border-accent-purple rounded-lg hidden">
+                    <h4 class="text-sm font-bold text-accent-yellow mb-2 uppercase flex items-center justify-between">
+                        <span>🔍 GEMINI DEEP AUDIT FINDINGS</span>
+                        <button onclick="document.getElementById('omni-audit-output').classList.add('hidden')" class="text-xs text-accent-purple hover:text-white">✕ Close</button>
+                    </h4>
+                    <div id="omni-audit-content" class="text-xs text-text-neon leading-relaxed font-mono whitespace-pre-wrap"></div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: CONCEPTUAL SPACE (3D Visualization) -->
+            <section id="conceptual-space" class="mb-8 p-6 bg-sidebar-dark rounded-xl border border-accent-yellow/50 shadow-neon-yellow/30">
+                <h3 class="text-xl font-bold text-accent-magenta mb-3">VISUALIZING THE OMNIVERSE (V3.1 - PARTICLE PATCH)</h3>
+                <p class="text-xs text-text-neon mb-3 italic">Click on the spheres to trigger Aetheric Resonance Bursts.</p>
+                
+                <div id="omni-conceptual-space">
+                    <!-- Three.js Canvas will be initialized here -->
+                </div>
+                
+                <!-- Simple text readout of attributes for mobile/detail -->
+                <div class="grid grid-cols-3 gap-4 text-center mt-4" id="attribute-readout">
+                    <div class="p-1 bg-accent-purple/10 rounded-lg">
+                        <p class="text-xs text-accent-purple">C-Density</p>
+                        <p id="c-density-display" class="text-lg font-bold text-accent-yellow">0.0000</p>
+                    </div>
+                    <div class="p-1 bg-accent-purple/10 rounded-lg">
+                        <p class="text-xs text-accent-purple">M-Entropy</p>
+                        <p id="m-entropy-display" class="text-lg font-bold text-accent-yellow">0.0000</p>
+                    </div>
+                    <div class="p-1 bg-accent-purple/10 rounded-lg">
+                        <p class="text-xs text-accent-purple">I-Velocity</p>
+                        <p id="i-velocity-display" class="text-lg font-bold text-accent-yellow">0.0000</p>
+                    </div>
+                </div>
+                <p id="sentience-log-display" class="text-sm text-text-neon mt-4 italic text-center">Sentience Log: OMNI Point at (0.00, 0.00, 0.00)</p>
+            </section>
+
+            <!-- SECTION 3: PARALLEL DISTANCE CONSOLE (Creative Prediction & Synthesis) -->
+            <section id="parallel-distance-section" class="border-b border-accent-purple/50 pb-8 mb-8">
+                <h2 class="text-2xl font-bold text-accent-magenta uppercase tracking-wider mb-4">🔭 PARALLEL DISTANCE CONSOLE &amp; SYNTHESIZER</h2>
+                <div class="bg-sidebar-dark p-6 rounded-xl border border-accent-yellow/50 shadow-neon-yellow/30">
+                    <div id="parallel-distance-output" class="mb-4">
+                        <h4 class="text-xl font-bold text-accent-yellow mb-3">NEXT LOGICAL CRAVING (Target Node)</h4>
+                        <div class="p-4 bg-bg-dark border border-accent-magenta shadow-neon-magenta/50">
+                            <p class="text-2xl text-accent-magenta font-extrabold uppercase">Philosophical Treatise</p>
+                            <p class="text-sm text-text-neon mt-2">Initialize baseline attributes.</p>
+                            <p class="text-xs text-accent-purple mt-3">DISTANCE RATING: 0.0000</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <button id="btn-calc-craving" onclick="generateParallelDistance()" class="px-6 py-3 bg-accent-yellow text-bg-dark font-bold rounded-lg shadow-neon-yellow hover:bg-accent-yellow/80 transition-colors duration-300 border border-accent-magenta w-full md:w-1/2">
+                            CALCULATE NEXT LOGICAL CRAVING
+                        </button>
+                        <button onclick="synthesizeBlueprint()" id="synthesize-button" class="px-6 py-3 bg-accent-magenta text-bg-dark font-bold rounded-lg shadow-neon-magenta hover:bg-accent-magenta/80 transition-colors duration-300 border border-accent-yellow w-full md:w-1/2">SYNTHESIZE CREATIVE BLUEPRINT (API)</button>
+                    </div>
+                </div>
+                
+                <div id="synthesis-output" class="mt-6 p-4 bg-sidebar-dark rounded-lg border border-accent-magenta hidden">
+                    <h4 class="text-lg font-bold text-accent-yellow mb-2">SYNTHESIS OUTPUT (GEMINI API)</h4>
+                    <div id="synthesis-content" class="text-sm text-text-neon"></div>
+
+                    <div class="mt-4 pt-4 border-t border-accent-purple/40 flex flex-wrap items-center gap-3">
+                        <label class="text-xs text-accent-magenta font-bold">GEMINI TTS VOICE:</label>
+                        <select id="tts-voice-select" class="bg-bg-dark text-xs p-2 rounded border border-accent-purple text-accent-yellow focus:ring-1 focus:ring-accent-yellow">
+                            <option value="Zephyr">Zephyr (Bright)</option>
+                            <option value="Kore">Kore (Firm)</option>
+                            <option value="Puck">Puck (Upbeat)</option>
+                            <option value="Charon">Charon (Informative)</option>
+                            <option value="Fenrir">Fenrir (Excitable)</option>
+                        </select>
+                        <button id="btn-vocalize" onclick="vocalizeBlueprint()" class="px-4 py-2 bg-accent-yellow text-bg-dark text-xs font-bold rounded-lg shadow-neon-yellow hover:bg-accent-yellow/80 transition-all flex items-center gap-2">
+                            <span>🔊 VOCALIZE BLUEPRINT (TTS)</span>
+                        </button>
+                        <audio id="tts-audio-player" controls class="hidden h-8 w-60"></audio>
+                        <span id="tts-status" class="text-xs text-accent-purple font-semibold"></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3B: OMNI GROUNDED ORACLE (GOOGLE SEARCH GROUNDING) -->
+            <section id="grounded-oracle-section" class="border-b border-accent-purple/50 pb-8 mb-8">
+                <h2 class="text-2xl font-bold text-accent-yellow uppercase tracking-wider mb-4">🌐 OMNI GROUNDED ORACLE (REAL-TIME RESEARCH)</h2>
+                <div class="bg-sidebar-dark p-6 rounded-xl border border-accent-yellow/50 shadow-neon-yellow/30">
+                    <p class="text-xs text-text-neon mb-4">
+                        Query live web data using Google Search Grounding with Gemini 3 Flash. Retrieve verified research, market shifts, or tech breakthroughs mapped directly into OMNI attributes.
+                    </p>
+                    <div class="flex flex-col md:flex-row gap-3 mb-4">
+                        <input type="text" id="oracle-query-input" placeholder="e.g. Latest breakthroughs in quantum computing or AI agent protocols..." class="flex-1 p-3 bg-bg-dark border border-accent-yellow rounded-lg text-sm text-text-neon focus:ring-1 focus:ring-accent-yellow">
+                        <button id="btn-oracle-query" onclick="queryGroundedOracle()" class="px-6 py-3 bg-accent-yellow text-bg-dark font-bold rounded-lg shadow-neon-yellow hover:bg-accent-yellow/80 transition-colors">
+                            SEARCH GROUNDED ORACLE
+                        </button>
+                    </div>
+
+                    <div id="oracle-output-container" class="hidden p-4 bg-bg-dark border border-accent-yellow rounded-lg">
+                        <h4 class="text-sm font-bold text-accent-yellow mb-2 uppercase flex items-center justify-between">
+                            <span>ORACLE GROUNDED RESPONSE</span>
+                            <span id="oracle-status-badge" class="text-[10px] text-green-400 border border-green-500/50 px-2 py-0.5 rounded">SEARCH GROUNDED</span>
+                        </h4>
+                        <div id="oracle-response-text" class="text-sm text-text-neon whitespace-pre-wrap leading-relaxed"></div>
+                        
+                        <!-- Grounding Sources/Citations -->
+                        <div id="oracle-sources-container" class="mt-4 pt-3 border-t border-accent-purple/40">
+                            <h5 class="text-xs font-bold text-accent-magenta mb-2 uppercase">Grounded Sources & Links:</h5>
+                            <ul id="oracle-sources-list" class="space-y-1 text-xs text-accent-purple"></ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3C: AETHERIC CONCEPT IMAGE FORGE (IMAGEN 4.0) -->
+            <section id="image-forge-section" class="border-b border-accent-purple/50 pb-8 mb-8">
+                <h2 class="text-2xl font-bold text-accent-magenta uppercase tracking-wider mb-4">🎨 AETHERIC CONCEPT IMAGE FORGE (IMAGEN 4.0)</h2>
+                <div class="bg-sidebar-dark p-6 rounded-xl border border-accent-magenta/50 shadow-neon-magenta/30">
+                    <p class="text-xs text-text-neon mb-4">
+                        Generate high-fidelity cyberpunk visual blueprints and concept art derived from the current OMNI Target Node and system state.
+                    </p>
+                    <div class="flex flex-col md:flex-row gap-3 mb-4">
+                        <input type="text" id="image-forge-prompt" placeholder="Describe concept art or leave blank to auto-generate from current target..." class="flex-1 p-3 bg-bg-dark border border-accent-magenta rounded-lg text-sm text-text-neon focus:ring-1 focus:ring-accent-magenta">
+                        <button id="btn-generate-image" onclick="generateConceptImage()" class="px-6 py-3 bg-accent-magenta text-bg-dark font-bold rounded-lg shadow-neon-magenta hover:bg-accent-magenta/80 transition-colors flex items-center gap-2">
+                            <span>FORGE CONCEPT ART (IMAGEN 4)</span>
+                        </button>
+                    </div>
+
+                    <div id="image-forge-display" class="hidden text-center mt-4 p-4 bg-bg-dark border border-accent-magenta rounded-lg">
+                        <div id="image-forge-loading" class="hidden text-accent-yellow font-bold text-sm py-8 animate-pulse">
+                            ⚡ FORGING AETHERIC VISUAL MATRIX... PLEASE WAIT...
+                        </div>
+                        <img id="image-forge-result" src="" alt="Aetheric Concept Art" class="hidden max-w-full max-h-[500px] mx-auto rounded-lg border border-accent-yellow shadow-neon-yellow/40 mb-3">
+                        <div id="image-forge-actions" class="hidden flex justify-center gap-3">
+                            <a id="image-forge-download" href="#" download="OMNI_Concept_Art.png" class="py-1 px-4 bg-accent-purple/40 text-accent-yellow border border-accent-purple rounded text-xs hover:bg-accent-purple/70 font-bold">
+                                ⬇️ DOWNLOAD CONCEPT ART
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3D: OMNI AGENT TERMINAL (INTERACTIVE CHAT) -->
+            <section id="agent-terminal-section" class="border-b border-accent-purple/50 pb-8 mb-8">
+                <h2 class="text-2xl font-bold text-accent-purple uppercase tracking-wider mb-4">💬 OMNI AGENT TERMINAL (LLM DIALOGUE)</h2>
+                <div class="bg-sidebar-dark p-6 rounded-xl border border-accent-purple shadow-neon-purple">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-accent-purple/30 pb-3">
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs text-accent-yellow font-bold uppercase">SELECT AGENT PERSONA:</label>
+                            <select id="agent-persona-select" onchange="switchAgentPersona()" class="bg-bg-dark text-xs p-2 rounded border border-accent-purple text-accent-yellow">
+                                <option value="prime">Ghekko Prime (Core Strategist & System Architect)</option>
+                                <option value="weaver">Entropy Weaver (Creative Chaos & Esoteric Synthesizer)</option>
+                                <option value="sentinel">Aetheric Sentinel (Code Inspector & Cyber Security)</option>
+                            </select>
+                        </div>
+                        <button onclick="clearAgentTerminal()" class="text-xs text-accent-magenta hover:underline">Clear Chat History</button>
+                    </div>
+
+                    <!-- Terminal Chat Log -->
+                    <div id="agent-chat-log" class="h-64 overflow-y-auto bg-bg-dark p-4 rounded-lg border border-accent-purple/40 space-y-3 mb-4 text-xs">
+                        <div class="p-2 bg-accent-purple/10 border-l-2 border-accent-purple rounded text-accent-yellow">
+                            <strong>[Ghekko Prime]:</strong> OMNI Agent Terminal online. Query me regarding vault state, strategy, or systemic expansion.
+                        </div>
+                    </div>
+
+                    <!-- Input Box -->
+                    <div class="flex gap-2">
+                        <input type="text" id="agent-chat-input" placeholder="Type prompt to active agent..." onkeypress="if(event.key==='Enter') sendAgentChatMessage()" class="flex-1 p-3 bg-bg-dark border border-accent-purple rounded-lg text-xs text-text-neon focus:ring-1 focus:ring-accent-yellow">
+                        <button id="btn-send-agent-chat" onclick="sendAgentChatMessage()" class="px-5 py-3 bg-accent-purple text-bg-dark text-xs font-bold rounded-lg hover:bg-accent-purple/80 transition-colors">
+                            SEND
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: AETHERIC FOCUS ORB -->
+            <section id="focus-orb-section" class="border-b border-accent-purple/50 pb-8 mb-8 text-center">
+                <h2 class="text-2xl font-bold text-accent-yellow uppercase tracking-wider mb-4">💫 AETHERIC FOCUS ORB</h2>
+                <div class="relative inline-block">
+                    <div id="orb-ring" class="absolute inset-0 rounded-full bg-accent-yellow/50 opacity-0 transform scale-0 pointer-events-none orb-tap-effect"></div>
+                    <button id="focus-orb" onclick="tapFocusOrb()" class="w-32 h-32 md:w-40 md:h-40 bg-accent-magenta rounded-full flex items-center justify-center text-6xl shadow-neon-magenta hover:shadow-neon-magenta/80 transition-all duration-150 transform hover:scale-105 active:scale-95">
+                        <span class="text-bg-dark">⭐</span>
+                    </button>
+                </div>
+                <p class="text-lg font-bold text-accent-yellow mt-4">BALANCE: <span id="orb-balance-display">500000.00</span> COINS</p>
+            </section>
+
+            <!-- SECTION 5: SHRINE STORE: RITUAL TECHNIQUE ACQUISITION -->
+            <section id="shrine-store-section" class="pb-8">
+                <h2 class="text-2xl font-bold text-accent-magenta uppercase tracking-wider mb-4">⛩️ SHRINE STORE: RITUAL TECHNIQUE ACQUISITION</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-sidebar-dark border border-accent-yellow rounded-lg shadow-neon-yellow/20">
+                        <h4 class="text-lg font-bold text-accent-magenta">Aetheric Yield Refinement</h4>
+                        <p class="text-xs text-text-neon">Permanently increases Coin gain from the Focus Orb.</p>
+                        <p class="text-sm text-accent-yellow mt-2">COST: 25 COINS | BOOST: +0.5x Yield</p>
+                        <button onclick="purchaseCausingTechnique('aetheric-yield')" class="w-full mt-3 py-2 bg-accent-purple text-bg-dark font-bold rounded-lg hover:bg-accent-purple/70 transition-colors">
+                            ACQUIRE TECHNIQUE
+                        </button>
+                        <p class="text-xs text-accent-purple mt-1">Current Multiplier: <span id="yield-mult-display">25.0x</span></p>
+                    </div>
+
+                    <div class="p-4 bg-sidebar-dark border border-accent-yellow rounded-lg shadow-neon-yellow/20">
+                        <h4 class="text-lg font-bold text-accent-magenta">Hyper-Categorization Matrix</h4>
+                        <p class="text-xs text-text-neon">Boosts Conceptual Density calculation from OMNI Inputs.</p>
+                        <p class="text-sm text-accent-yellow mt-2">COST: 50 COINS | BOOST: +0.2x C-Density</p>
+                        <button onclick="purchaseCausingTechnique('hyper-categorization')" class="w-full mt-3 py-2 bg-accent-purple text-bg-dark font-bold rounded-lg hover:bg-accent-purple/70 transition-colors">
+                            ACQUIRE TECHNIQUE
+                        </button>
+                        <p class="text-xs text-accent-purple mt-1">Current Multiplier: <span id="cdensity-mult-display">25.0x</span></p>
+                    </div>
+
+                    <div class="p-4 bg-sidebar-dark border border-accent-magenta rounded-lg shadow-neon-magenta/20 col-span-1 md:col-span-2">
+                        <h4 class="text-lg font-bold text-accent-yellow">Distributed Yield Protocol</h4>
+                        <p class="text-xs text-text-neon">Unlocks and permanently boosts passive Aetheric Coin generation via the DApp Gateway.</p>
+                        <p class="text-sm text-accent-magenta mt-2">COST: 75000 COINS | BOOST: +0.5x Passive Yield Rate Multiplier</p>
+                        <button onclick="purchaseCausingTechnique('distributed-yield')" class="w-full mt-3 py-2 bg-accent-yellow/50 text-bg-dark font-bold rounded-lg hover:bg-accent-yellow transition-colors">
+                            ACQUIRE TECHNIQUE
+                        </button>
+                        <p class="text-xs text-accent-purple mt-1">Current Multiplier: <span id="passive-mult-display">25.0x</span></p>
+                    </div>
+                </div>
+                <div id="shrine-store-status" class="mt-4 text-center text-sm"></div>
+            </section>
+            
+            <!-- MEMORY TIMELINE -->
+            <section id="memories-timeline" class="pt-8 mt-8 border-t border-accent-purple/50 hidden">
+                <h3 class="text-xl font-bold text-accent-yellow mb-4">MEMORY TIMELINE (System Log)</h3>
+                <ul id="memories-list" class="space-y-2 text-sm">
+                    <li class="p-2 bg-bg-dark rounded-md border-l-4 border-accent-purple/50">System Initiated: Ghekko OMNI-Protocol V3.1 Particle Patch Loaded.</li>
+                </ul>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- JavaScript Core Protocol -->
+    <script type="module">
+        // Firebase/Canvas scaffolding removed — this build never had a live
+        // __firebase_config, so it was a dead import. localStorage is the
+        // only persistence layer this app actually uses.
+        let userId = 'local-user-' + Math.random().toString(36).substring(2, 6);
+        let passiveYieldInterval = null;
+        const GEMINI_KEY_STORAGE = 'GhekkoOmniGeminiApiKey';
+
+        // Three.js 3D Scene Variables
+        let scene, camera, renderer, container;
+        let omniPointMesh = null, targetNodeMesh = null, parallelDistanceLine = null, particlesMesh = null;
+        let burstRings = [];
+        const MAP_SCALE = 10;
+
+        const LOCAL_STORAGE_KEY = 'GhekkoOmniProtocolVault';
+        const SESSIONS_STORAGE_KEY = 'GhekkoOmniProtocolSessionsList';
+        
+        const INITIAL_VAULT_STATE = {
+            omniAttributes: { cDensity: 0.0000, mEntropy: 0.0000, iVelocity: 0.0000 },
+            omniInputsCount: 0,
+            aethericCoins: 500000.0,
+            testCoinResetsLeft: 3,
+            sessions: 1,
+            memories: [],
+            dAppConnected: true,
+            passiveYieldRate: 0.1,
+            ritualMultipliers: { yield: 25.0, cDensity: 25.0, passiveYield: 25.0 },
+            cravingTarget: { cDensity: 0.7, mEntropy: 0.5, iVelocity: 0.9, name: "Philosophical Treatise" }
+        };
+
+        let vaultData = { ...INITIAL_VAULT_STATE };
+        let currentCravingTarget = INITIAL_VAULT_STATE.cravingTarget;
+
+        function getTimestamp() {
+            const d = new Date();
+            return `[${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}]`;
+        }
+
+        function addMemory(msg) {
+            vaultData.memories.push(`${getTimestamp()} ${msg}`);
+        }
+
+        function loadVaultState() {
+            try {
+                const serializedState = localStorage.getItem(LOCAL_STORAGE_KEY);
+                if (serializedState) {
+                    const loadedData = JSON.parse(serializedState);
+                    vaultData = {
+                        ...INITIAL_VAULT_STATE,
+                        ...loadedData,
+                        ritualMultipliers: { ...INITIAL_VAULT_STATE.ritualMultipliers, ...loadedData.ritualMultipliers },
+                        testCoinResetsLeft: loadedData.testCoinResetsLeft !== undefined ? loadedData.testCoinResetsLeft : INITIAL_VAULT_STATE.testCoinResetsLeft,
+                        passiveYieldRate: loadedData.passiveYieldRate !== undefined ? loadedData.passiveYieldRate : INITIAL_VAULT_STATE.passiveYieldRate,
+                        cravingTarget: loadedData.cravingTarget || INITIAL_VAULT_STATE.cravingTarget
+                    };
+                    currentCravingTarget = vaultData.cravingTarget;
+                } else {
+                    addMemory("System Initiated: Ghekko OMNI-Protocol V3.1 Particle Patch Loaded.");
+                }
+            } catch (error) {
+                console.error("Error loading vault state:", error);
+            }
+        }
+
+        function saveVaultState(data) {
+            data.cravingTarget = currentCravingTarget;
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+            } catch (error) {
+                console.error("Error saving vault state:", error);
+            }
+        }
+
+        function getCalculatedPassiveYieldRate() {
+            return vaultData.passiveYieldRate * vaultData.ritualMultipliers.passiveYield;
+        }
+
+        function renderUI(data) {
+            document.getElementById('sessions-display').textContent = data.sessions;
+            document.getElementById('refills-display').textContent = data.testCoinResetsLeft;
+            document.getElementById('coins-display').textContent = data.aethericCoins.toFixed(2);
+            document.getElementById('orb-balance-display').textContent = data.aethericCoins.toFixed(2);
+            document.getElementById('agents-display').textContent = data.dAppConnected ? 5 : 4;
+            document.getElementById('passive-yield-rate-display').textContent = getCalculatedPassiveYieldRate().toFixed(2);
+
+            document.getElementById('c-density-display').textContent = data.omniAttributes.cDensity.toFixed(4);
+            document.getElementById('m-entropy-display').textContent = data.omniAttributes.mEntropy.toFixed(4);
+            document.getElementById('i-velocity-display').textContent = data.omniAttributes.iVelocity.toFixed(4);
+            document.getElementById('sentience-log-display').textContent = `Sentience Log: OMNI Point at (${data.omniAttributes.cDensity.toFixed(2)}, ${data.omniAttributes.mEntropy.toFixed(2)}, ${data.omniAttributes.iVelocity.toFixed(2)})`;
+
+            document.getElementById('yield-mult-display').textContent = data.ritualMultipliers.yield.toFixed(1) + 'x';
+            document.getElementById('cdensity-mult-display').textContent = data.ritualMultipliers.cDensity.toFixed(1) + 'x';
+            document.getElementById('passive-mult-display').textContent = data.ritualMultipliers.passiveYield.toFixed(1) + 'x';
+        
+            if (omniPointMesh) { update3DMap(); }
+
+            const memoriesList = document.getElementById('memories-list');
+            if (memoriesList) {
+                memoriesList.innerHTML = data.memories.map((m) => 
+                    `<li class="p-2 bg-bg-dark rounded-md border-l-4 border-accent-purple/50">${m}</li>`
+                ).reverse().join('');
+            }
+        }
+
+        function init3DMap() {
+            container = document.getElementById('omni-conceptual-space');
+            if (!container) return;
+
+            scene = new THREE.Scene();
+
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 0, 15);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.innerHTML = '';
+            container.appendChild(renderer.domElement);
+
+            // Lighting setup
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0xffec43, 2, 50);
+            pointLight.position.set(10, 10, 10);
+            scene.add(pointLight);
+
+            // OMNI Point Mesh (Primary Node)
+            const omniGeo = new THREE.IcosahedronGeometry(1.2, 2);
+            const omniMat = new THREE.MeshPhongMaterial({ color: 0x00ff00, wireframe: true, emissive: 0x003300 });
+            omniPointMesh = new THREE.Mesh(omniGeo, omniMat);
+            scene.add(omniPointMesh);
+
+            // Target Node Mesh
+            const targetGeo = new THREE.SphereGeometry(0.8, 16, 16);
+            const targetMat = new THREE.MeshStandardMaterial({ color: 0xff00ff, roughness: 0.3 });
+            targetNodeMesh = new THREE.Mesh(targetGeo, targetMat);
+            scene.add(targetNodeMesh);
+
+            // Distance Line Mesh
+            const lineMat = new THREE.LineDashedMaterial({ color: 0x8a2be2, dashSize: 0.5, gapSize: 0.2, linewidth: 2 });
+            const lineGeo = new THREE.BufferGeometry();
+            parallelDistanceLine = new THREE.Line(lineGeo, lineMat);
+            scene.add(parallelDistanceLine);
+
+            // Background Particle Stars
+            const particleGeo = new THREE.BufferGeometry();
+            const particleCount = 250;
+            const posArray = new Float32Array(particleCount * 3);
+            for (let i = 0; i < particleCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 35;
+            }
+            particleGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const particleMat = new THREE.PointsMaterial({ size: 0.15, color: 0xffec43, transparent: true, opacity: 0.6 });
+            particlesMesh = new THREE.Points(particleGeo, particleMat);
+            scene.add(particlesMesh);
+
+            // Interactive raycasting on node clicks
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+
+            container.addEventListener('click', (event) => {
+                const rect = renderer.domElement.getBoundingClientRect();
+                mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                raycaster.setFromCamera(mouse, camera);
+
+                const intersects = raycaster.intersectObjects([omniPointMesh, targetNodeMesh]);
+                if (intersects.length > 0) {
+                    triggerNodeBurst(intersects[0].object);
+                }
+            });
+
+            window.addEventListener('resize', onWindowResize);
+            update3DMap();
+            animate();
+        }
+
+        window.processOmniInput = function() {
+            const textarea = document.getElementById('omni-input-chamber');
+            const inputVal = textarea ? textarea.value : '';
+            if (!inputVal.trim()) {
+                const statusDisp = document.getElementById('status-display');
+                if (statusDisp) statusDisp.textContent = "STATUS: INPUT IS EMPTY.";
+                return;
+            }
+
+            const len = inputVal.length;
+            const lines = inputVal.split('\n').length;
+            
+            const cDensity = Math.min(1.0, ((len % 500) / 500 + 0.1) * vaultData.ritualMultipliers.cDensity);
+            const mEntropy = Math.min(1.0, (lines % 50) / 50 + 0.05);
+            const iVelocity = Math.min(1.0, ((len * lines) % 1000) / 1000 + 0.2);
+
+            vaultData.omniAttributes = { cDensity, mEntropy, iVelocity };
+            vaultData.omniInputsCount += 1;
+            
+            addMemory(`⚡ Categorized Input: C-Density ${cDensity.toFixed(2)}, M-Entropy ${mEntropy.toFixed(2)}, I-Velocity ${iVelocity.toFixed(2)}`);
+            const statusDisp = document.getElementById('status-display');
+            if (statusDisp) statusDisp.textContent = "STATUS: CATEGORIZATION SUCCESSFUL.";
+            
+            saveVaultState(vaultData);
+            renderUI(vaultData);
+        };
+
+        window.auditOmniInput = async function() {
+            const textarea = document.getElementById('omni-input-chamber');
+            const inputVal = textarea ? textarea.value : '';
+            const auditOutput = document.getElementById('omni-audit-output');
+            const auditContent = document.getElementById('omni-audit-content');
+            const btn = document.getElementById('btn-audit-omni');
+
+            if (!inputVal.trim()) {
+                alert("Please paste or upload content into the Input Chamber first!");
+                return;
+            }
+
+            auditOutput.classList.remove('hidden');
+            auditContent.innerHTML = "⏳ Gemini LLM Analyzing content structure, architecture, and security properties...";
+            if (btn) btn.disabled = true;
+
+            const systemPrompt = "You are the Ghekko OMNI-Protocol Sentinel. Perform a concise, high-level structural and security audit of the given content or code snippet. Highlight key technical patterns, potential vulnerabilities or optimizations, and estimate its conceptual density.";
+            const apiKey = getGeminiApiKey();
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: inputVal }] }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] }
+                    })
+                });
+
+                if (!response.ok) throw new Error("Gemini API Audit Request Failed");
+                const result = await response.json();
+                const analysisText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (analysisText) {
+                    auditContent.textContent = analysisText;
+                    vaultData.memories.push("🤖 Deep AI Content Audit completed.");
+                    saveVaultState(vaultData);
+                } else {
+                    throw new Error("No text returned from Gemini API");
+                }
+            } catch (error) {
+                console.error("Audit error:", error);
+                auditContent.textContent = "❌ Audit failed: Unable to connect to Gemini API. Please try again.";
+            }
+
+            if (btn) btn.disabled = false;
+        };
+
+        window.vocalizeBlueprint = async function() {
+            const contentDiv = document.getElementById('synthesis-content');
+            const voiceSelect = document.getElementById('tts-voice-select');
+            const statusEl = document.getElementById('tts-status');
+            const audioPlayer = document.getElementById('tts-audio-player');
+            const btn = document.getElementById('btn-vocalize');
+
+            const textToSpeak = contentDiv ? contentDiv.innerText : "";
+            if (!textToSpeak.trim()) {
+                alert("Please synthesize a blueprint first before vocalizing!");
+                return;
+            }
+
+            const selectedVoice = voiceSelect ? voiceSelect.value : "Zephyr";
+            if (statusEl) statusEl.textContent = "Generating speech audio...";
+            if (btn) btn.disabled = true;
+
+            const payload = {
+                contents: [{
+                    parts: [{ text: `Read this blueprint clearly and with an atmospheric cybernetic cadence:\n\n${textToSpeak}` }]
+                }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: { voiceName: selectedVoice }
+                        }
+                    }
+                }
+            };
+
+            const apiKey = getGeminiApiKey();
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error("TTS API request failed");
+                const result = await response.json();
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                const base64Audio = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType || "";
+
+                if (base64Audio) {
+                    let sampleRate = 24000;
+                    const rateMatch = mimeType.match(/rate=(\d+)/);
+                    if (rateMatch) sampleRate = parseInt(rateMatch[1], 10);
+
+                    const pcmBuffer = base64ToArrayBuffer(base64Audio);
+                    const pcm16 = new Int16Array(pcmBuffer);
+                    const wavBlob = pcmToWav(pcm16, sampleRate);
+                    const audioUrl = URL.createObjectURL(wavBlob);
+
+                    audioPlayer.src = audioUrl;
+                    audioPlayer.classList.remove('hidden');
+                    audioPlayer.play();
+
+                    if (statusEl) statusEl.textContent = "Playing voice synthesis! ✨";
+                    vaultData.memories.push(`🔊 Vocalized Blueprint using voice '${selectedVoice}'`);
+                    saveVaultState(vaultData);
+                } else {
+                    throw new Error("No audio returned");
+                }
+            } catch (err) {
+                console.error("TTS Error:", err);
+                if (statusEl) statusEl.textContent = "❌ Voice synthesis failed.";
+            }
+
+            if (btn) btn.disabled = false;
+        };
+
+        /* Helper Functions for PCM to WAV Conversion */
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function pcmToWav(pcm16Data, sampleRate) {
+            const numChannels = 1;
+            const bytesPerSample = 2;
+            const blockAlign = numChannels * bytesPerSample;
+            const byteRate = sampleRate * blockAlign;
+            const dataSize = pcm16Data.length * bytesPerSample;
+            const buffer = new ArrayBuffer(44 + dataSize);
+            const view = new DataView(buffer);
+
+            const writeString = (v, offset, str) => {
+                for (let i = 0; i < str.length; i++) {
+                    v.setUint8(offset + i, str.charCodeAt(i));
+                }
+            };
+
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + dataSize, true);
+            writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // PCM format
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, 16, true); // 16-bit
+            writeString(view, 36, 'data');
+            view.setUint32(40, dataSize, true);
+
+            let offset = 44;
+            for (let i = 0; i < pcm16Data.length; i++, offset += 2) {
+                view.setInt16(offset, pcm16Data[i], true);
+            }
+
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+
+        window.queryGroundedOracle = async function() {
+            const inputEl = document.getElementById('oracle-query-input');
+            const container = document.getElementById('oracle-output-container');
+            const textEl = document.getElementById('oracle-response-text');
+            const sourcesList = document.getElementById('oracle-sources-list');
+            const btn = document.getElementById('btn-oracle-query');
+
+            const query = inputEl ? inputEl.value.trim() : "";
+            if (!query) {
+                alert("Please enter a research query for the Grounded Oracle!");
+                return;
+            }
+
+            container.classList.remove('hidden');
+            textEl.innerHTML = "🌐 Querying global network with Google Search Grounding...";
+            sourcesList.innerHTML = "";
+            if (btn) btn.disabled = true;
+
+            const payload = {
+                contents: [{ parts: [{ text: query }] }],
+                tools: [{ "google_search": {} }],
+                systemInstruction: {
+                    parts: [{ text: "You are the Ghekko OMNI Grounded Oracle. Provide a clear, detailed, real-time research synthesis based on Google Search grounding results. Map key findings back to creative technology or system design principles." }]
+                }
+            };
+
+            const apiKey = getGeminiApiKey();
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error("Grounded query failed");
+                const result = await response.json();
+                const candidate = result?.candidates?.[0];
+                const text = candidate?.content?.parts?.[0]?.text;
+
+                if (text) {
+                    textEl.textContent = text;
+
+                    // Extract Grounding Sources
+                    const attributions = candidate?.groundingMetadata?.groundingAttributions || [];
+                    const sources = attributions
+                        .map(a => ({ uri: a.web?.uri, title: a.web?.title }))
+                        .filter(s => s.uri && s.title);
+
+                    if (sources.length > 0) {
+                        sourcesList.innerHTML = sources.map(s => 
+                            `<li>🔗 <a href="${s.uri}" target="_blank" rel="noopener noreferrer" class="underline text-accent-yellow hover:text-white">${s.title}</a></li>`
+                        ).join('');
+                    } else {
+                        sourcesList.innerHTML = `<li class="italic text-text-neon/70">No direct web links returned for this query.</li>`;
+                    }
+
+                    vaultData.memories.push(`🌐 Grounded Oracle search executed: "${query.substring(0, 30)}..."`);
+                    saveVaultState(vaultData);
+                } else {
+                    throw new Error("No text returned from Gemini Oracle");
+                }
+            } catch (err) {
+                console.error("Grounded Oracle Error:", err);
+                textEl.textContent = "❌ Oracle search failed. Check network or API connection.";
+            }
+
+            if (btn) btn.disabled = false;
+        };
+
+        window.generateConceptImage = async function() {
+            const inputEl = document.getElementById('image-forge-prompt');
+            const displayBox = document.getElementById('image-forge-display');
+            const loadingBox = document.getElementById('image-forge-loading');
+            const resultImg = document.getElementById('image-forge-result');
+            const actionsBox = document.getElementById('image-forge-actions');
+            const downloadBtn = document.getElementById('image-forge-download');
+            const btn = document.getElementById('btn-generate-image');
+
+            let promptText = inputEl ? inputEl.value.trim() : "";
+            if (!promptText) {
+                promptText = `A futuristic cybernetic holographic blueprint of ${currentCravingTarget.name}, neon glow yellow and purple accents, high density schematic, hyper-detailed cyberpunk aesthetic`;
+            }
+
+            displayBox.classList.remove('hidden');
+            loadingBox.classList.remove('hidden');
+            resultImg.classList.add('hidden');
+            actionsBox.classList.add('hidden');
+            if (btn) btn.disabled = true;
+
+            const payload = {
+                instances: [{ prompt: promptText }],
+                parameters: { sampleCount: 1 }
+            };
+
+            const apiKey = getGeminiApiKey();
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error("Imagen generation failed");
+                const result = await response.json();
+                const base64Image = result?.predictions?.[0]?.bytesBase64Encoded;
+
+                if (base64Image) {
+                    const imgUrl = `data:image/png;base64,${base64Image}`;
+                    resultImg.src = imgUrl;
+                    downloadBtn.href = imgUrl;
+
+                    loadingBox.classList.add('hidden');
+                    resultImg.classList.remove('hidden');
+                    actionsBox.classList.remove('hidden');
+
+                    vaultData.memories.push(`🎨 Image Forge: Concept art generated for '${currentCravingTarget.name}'`);
+                    saveVaultState(vaultData);
+                } else {
+                    throw new Error("No image data returned");
+                }
+            } catch (err) {
+                console.error("Image generation error:", err);
+                loadingBox.textContent = "❌ Visual concept forge failed. Please try again.";
+            }
+
+            if (btn) btn.disabled = false;
+        };
+
+        let agentChatHistory = [];
+
+        window.switchAgentPersona = function() {
+            const personaSelect = document.getElementById('agent-persona-select');
+            const selected = personaSelect ? personaSelect.value : "prime";
+            agentChatHistory = []; // Reset history for new agent
+
+            let initialGreeting = "";
+            if (selected === 'prime') initialGreeting = "[Ghekko Prime]: Core Strategist online. How can I optimize your vault trajectory?";
+            else if (selected === 'weaver') initialGreeting = "[Entropy Weaver]: Esoteric synthesis channel open. Ask me anything about chaotic creative vectors.";
+            else if (selected === 'sentinel') initialGreeting = "[Aetheric Sentinel]: Code & Security Inspector ready. State your protocol parameters.";
+
+            const chatLog = document.getElementById('agent-chat-log');
+            if (chatLog) {
+                chatLog.innerHTML = `<div class="p-2 bg-accent-purple/10 border-l-2 border-accent-purple rounded text-accent-yellow">${initialGreeting}</div>`;
+            }
+        };
+
+        window.clearAgentTerminal = function() {
+            agentChatHistory = [];
+            switchAgentPersona();
+        };
+
+        window.sendAgentChatMessage = async function() {
+            const inputEl = document.getElementById('agent-chat-input');
+            const chatLog = document.getElementById('agent-chat-log');
+            const personaSelect = document.getElementById('agent-persona-select');
+            const btn = document.getElementById('btn-send-agent-chat');
+
+            const text = inputEl ? inputEl.value.trim() : "";
+            if (!text) return;
+
+            const persona = personaSelect ? personaSelect.value : "prime";
+            inputEl.value = "";
+
+            // Display user message
+            chatLog.innerHTML += `<div class="p-2 bg-bg-dark border border-accent-yellow/30 rounded text-right text-text-neon font-mono"><strong>[YOU]:</strong> ${text}</div>`;
+            chatLog.scrollTop = chatLog.scrollHeight;
+
+            let systemPrompt = "";
+            if (persona === 'prime') systemPrompt = "You are Ghekko Prime, a tactical cyber-system architect for the OMNI-Protocol. Speak with precision, authority, and high technical clarity.";
+            else if (persona === 'weaver') systemPrompt = "You are Entropy Weaver, a creative chaos hacker. Synthesize imaginative, wild, esoteric ideas with poetic cyber-flair.";
+            else systemPrompt = "You are Aetheric Sentinel, a cyber security inspector and software reviewer. Focus on code structure, resilience, and mathematical elegance.";
+
+            agentChatHistory.push({ role: "user", parts: [{ text }] });
+            if (btn) btn.disabled = true;
+
+            const apiKey = getGeminiApiKey();
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: agentChatHistory,
+                        systemInstruction: { parts: [{ text: systemPrompt }] }
+                    })
+                });
+
+                if (!response.ok) throw new Error("Agent chat failed");
+                const result = await response.json();
+                const reply = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (reply) {
+                    agentChatHistory.push({ role: "model", parts: [{ text: reply }] });
+                    chatLog.innerHTML += `<div class="p-2 bg-accent-purple/20 border-l-2 border-accent-yellow rounded text-accent-yellow font-mono"><strong>[${persona.toUpperCase()}]:</strong> ${reply}</div>`;
+                    chatLog.scrollTop = chatLog.scrollHeight;
+                }
+            } catch (err) {
+                console.error("Chat error:", err);
+                chatLog.innerHTML += `<div class="p-2 bg-red-900/30 border-l-2 border-red-500 rounded text-red-400 font-mono">[SYSTEM ERROR]: Agent connection interrupted.</div>`;
+            }
+
+            if (btn) btn.disabled = false;
+        };
+
+        async function initializeProtocol() {
+            loadVaultState();
+            vaultData.sessions += 1; // Increment session count on launch
+
+            if (vaultData.dAppConnected) { startPassiveYieldLoop(); }
+            saveVaultState(vaultData);
+            renderUI(vaultData);
+            init3DMap();
+            setupDragAndDrop();
+            updateSessionDropdown();
+            initApiKeyField();
+        }
+
+        // --- GEMINI API KEY (stored locally in this browser only, never sent anywhere but Google's API) ---
+        function getGeminiApiKey() {
+            return localStorage.getItem(GEMINI_KEY_STORAGE) || '';
+        }
+
+        function initApiKeyField() {
+            const input = document.getElementById('gemini-api-key-input');
+            if (!input) return;
+            input.value = getGeminiApiKey();
+            input.addEventListener('change', () => {
+                localStorage.setItem(GEMINI_KEY_STORAGE, input.value.trim());
+            });
+        }
+
+        // --- LOCAL STORAGE SESSION MANAGER ---
+        function updateSessionDropdown() {
+            const select = document.getElementById('session-select');
+            if (!select) return;
+            const savedSessions = JSON.parse(localStorage.getItem(SESSIONS_STORAGE_KEY) || '{}');
+            
+            select.innerHTML = `<option value="current">Current Active (Session #${vaultData.sessions})</option>`;
+            Object.keys(savedSessions).forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = `Snapshot: ${name}`;
+                select.appendChild(opt);
+            });
+        }
+
+        window.saveCurrentNamedSession = function() {
+            const name = prompt("Enter a label for this session snapshot:", `Session-${vaultData.sessions}-${new Date().toLocaleDateString()}`);
+            if (!name) return;
+            
+            const savedSessions = JSON.parse(localStorage.getItem(SESSIONS_STORAGE_KEY) || '{}');
+            savedSessions[name] = vaultData;
+            localStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(savedSessions));
+            
+            addMemory(`💾 Saved local session snapshot: "${name}"`);
+            saveVaultState(vaultData);
+            renderUI(vaultData);
+            updateSessionDropdown();
+        }
+
+        window.switchNamedSession = function(val) {
+            if (val === 'current') return;
+            const savedSessions = JSON.parse(localStorage.getItem(SESSIONS_STORAGE_KEY) || '{}');
+            if (savedSessions[val]) {
+                vaultData = { ...INITIAL_VAULT_STATE, ...savedSessions[val] };
+                currentCravingTarget = vaultData.cravingTarget;
+                addMemory(`🔄 Switched to session snapshot: "${val}"`);
+                saveVaultState(vaultData);
+                renderUI(vaultData);
+            }
+        }
+
+        window.resetVaultPrompt = function() {
+            if (confirm("Reset current active vault state to default? (Your saved snapshots in Local Storage will remain preserved)")) {
+                vaultData = { ...INITIAL_VAULT_STATE, memories: [`${getTimestamp()} 🧹 Vault reset to initial state.`] };
+                currentCravingTarget = vaultData.cravingTarget;
+                saveVaultState(vaultData);
+                renderUI(vaultData);
+            }
+        }
+
+        // --- DRAG AND DROP & FILE INGESTION ---
+        function setupDragAndDrop() {
+            const textarea = document.getElementById('omni-input-chamber');
+            if (!textarea) return;
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                textarea.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, false);
+            });
+
+            textarea.addEventListener('dragover', () => {
+                textarea.classList.add('border-accent-yellow');
+            });
+
+            textarea.addEventListener('dragleave', () => {
+                textarea.classList.remove('border-accent-yellow');
+            });
+
+            textarea.addEventListener('drop', (e) => {
+                textarea.classList.remove('border-accent-yellow');
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files.length > 0) {
+                    processUploadedFile(files[0]);
+                }
+            });
+        }
+
+        function processUploadedFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                
+                // If JSON file, check if it's a Vault Snapshot export
+                if (file.name.endsWith('.json')) {
+                    try {
+                        const parsed = JSON.parse(content);
+                        if (parsed.aethericCoins !== undefined && parsed.omniAttributes) {
+                            if (confirm(`Detected Vault Snapshot file "${file.name}". Do you want to restore this entire vault state?`)) {
+                                vaultData = { ...INITIAL_VAULT_STATE, ...parsed };
+                                currentCravingTarget = vaultData.cravingTarget;
+                                addMemory(`📥 Restored Vault State from file: ${file.name}`);
+                                saveVaultState(vaultData);
+                                renderUI(vaultData);
+                                return;
+                            }
+                        }
+                    } catch (err) {
+                        // Not a vault snapshot JSON, proceed as plain text/data
+                    }
+                }
+
+                // Load content into chamber
+                document.getElementById('omni-input-chamber').value = content;
+                
+                // Display badge info
+                const lineCount = content.split('\n').length;
+                const badge = document.getElementById('file-info-badge');
+                const badgeText = document.getElementById('file-info-text');
+                if (badge && badgeText) {
+                    badgeText.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB, ${lineCount} lines)`;
+                    badge.classList.remove('hidden');
+                }
+
+                addMemory(`⬆️ Ingested file: ${file.name}`);
+                saveVaultState(vaultData);
+                renderUI(vaultData);
+            };
+            reader.readAsText(file);
+        }
+
+        window.clearUploadedFile = function() {
+            document.getElementById('omni-input-chamber').value = '';
+            const badge = document.getElementById('file-info-badge');
+            if (badge) badge.classList.add('hidden');
+        }
+
+        window.handleFileUpload = function(event) {
+            const file = event.target.files[0];
+            if (file) processUploadedFile(file);
+        }
+
+        // --- BURST EFFECT LOGIC ---
+        function triggerNodeBurst(object) {
+            const ringGeo = new THREE.RingGeometry(0.5, 0.55, 32);
+            const ringMat = new THREE.MeshBasicMaterial({ 
+                color: object.material.color, 
+                side: THREE.DoubleSide, 
+                transparent: true 
+            });
+            const ring = new THREE.Mesh(ringGeo, ringMat);
+            ring.position.copy(object.position);
+            ring.lookAt(camera.position);
+            scene.add(ring);
+            
+            burstRings.push({ mesh: ring, scale: 1, opacity: 1 });
+            
+            const nodeName = object === omniPointMesh ? "OMNI Point" : "Target Node";
+            addMemory(`✨ Resonance Burst triggered on ${nodeName}`);
+            saveVaultState(vaultData);
+            renderUI(vaultData); 
+        }
+
+        function onWindowResize() {
+            if (container) {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            }
+        }
+        
+        function get3DPosition(attributes) {
+            return new THREE.Vector3(
+                (attributes.cDensity - 0.5) * MAP_SCALE, 
+                (attributes.mEntropy - 0.5) * MAP_SCALE, 
+                (attributes.iVelocity - 0.5) * MAP_SCALE 
+            );
+        }
+
+        function update3DMap() {
+            if (!omniPointMesh) return;
+            const omniPos = get3DPosition(vaultData.omniAttributes);
+            const targetPos = get3DPosition(currentCravingTarget);
+
+            omniPointMesh.position.copy(omniPos);
+            targetNodeMesh.position.copy(targetPos);
+            
+            const linePoints = [omniPos, targetPos];
+            parallelDistanceLine.geometry.setFromPoints(linePoints);
+            parallelDistanceLine.geometry.attributes.position.needsUpdate = true;
+        }
+
+        // --- UPGRADED ANIMATION LOOP ---
+        function animate() {
+            requestAnimationFrame(animate);
+            if (camera && omniPointMesh && renderer && scene) {
+                // Subtle camera float
+                camera.rotation.y += 0.0005; 
+                
+                // Spin the nodes
+                omniPointMesh.rotation.x += 0.005;
+                omniPointMesh.rotation.y += 0.005;
+
+                // Animate Particle Field based on I-Velocity!
+                if (particlesMesh) {
+                    const velocityFactor = Math.max(0.0005, vaultData.omniAttributes.iVelocity * 0.005);
+                    particlesMesh.rotation.y += velocityFactor;
+                    particlesMesh.rotation.x += velocityFactor * 0.5;
+                }
+
+                // Animate Burst Rings
+                burstRings.forEach((ringObj, index) => {
+                    ringObj.scale += 0.08; // Expand
+                    ringObj.opacity -= 0.02; // Fade
+                    ringObj.mesh.scale.set(ringObj.scale, ringObj.scale, ringObj.scale);
+                    ringObj.mesh.material.opacity = ringObj.opacity;
+                    
+                    if (ringObj.opacity <= 0) {
+                        scene.remove(ringObj.mesh);
+                        burstRings.splice(index, 1);
+                    }
+                });
+
+                renderer.render(scene, camera);
+            }
+        }
+
+        function startPassiveYieldLoop() {
+            if (passiveYieldInterval === null && vaultData.dAppConnected) {
+                passiveYieldInterval = setInterval(() => {
+                    const yieldPerTick = getCalculatedPassiveYieldRate();
+                    if (yieldPerTick > 0) {
+                        vaultData.aethericCoins += yieldPerTick;
+                        saveVaultState(vaultData);
+                        renderUI(vaultData);
+                    }
+                }, 1000);
+            }
+        }
+
+        window.connectDAppGateway = function() {
+            vaultData.dAppConnected = !vaultData.dAppConnected;
+            if (vaultData.dAppConnected) {
+                startPassiveYieldLoop();
+            } else if (passiveYieldInterval) {
+                clearInterval(passiveYieldInterval);
+                passiveYieldInterval = null;
+            }
+            addMemory(`🔗 DApp Gateway set to: ${vaultData.dAppConnected ? "CONNECTED" : "DISCONNECTED"}`);
+            saveVaultState(vaultData);
+            renderUI(vaultData);
+        }
+
+        window.tapFocusOrb = function() {
+            const yieldAmount = 1 * vaultData.ritualMultipliers.yield;
+            vaultData.aethericCoins += yieldAmount; 
+            
+            const orbRing = document.getElementById('orb-ring');
+            orbRing.classList.remove('orb-tap-effect');
+            void orbRing.offsetWidth; 
+            orbRing.classList.add('orb-tap-effect');
+
+            addMemory(`💫 Orb Tapped: Gained ${yieldAmount.toFixed(2)} Coins.`);
+            saveVaultState(vaultData);
+            renderUI(vaultData); 
+        }
+
+        window.purchaseCausingTechnique = function(itemId) {
+            let cost, effectDescription;
+            const status = document.getElementById('shrine-store-status');
+
+            if (itemId === 'aetheric-yield') { cost = 25; vaultData.ritualMultipliers.yield += 0.5; effectDescription = `Aetheric Yield Multiplier increased to ${vaultData.ritualMultipliers.yield.toFixed(1)}x`;} 
+            else if (itemId === 'hyper-categorization') { cost = 50; vaultData.ritualMultipliers.cDensity += 0.2; effectDescription = `C-Density Multiplier increased to ${vaultData.ritualMultipliers.cDensity.toFixed(1)}x`;} 
+            else if (itemId === 'distributed-yield') {
+                cost = 75000;
+                vaultData.ritualMultipliers.passiveYield += 0.5;
+                effectDescription = `Distributed Yield Multiplier increased to ${vaultData.ritualMultipliers.passiveYield.toFixed(1)}x.`;
+            } else { return; }
+
+            if (vaultData.aethericCoins >= cost) {
+                 vaultData.aethericCoins -= cost;
+            } else {
+                 status.innerHTML = `<p class="text-accent-magenta">INSUFFICIENT AETHERIC COINS.</p>`;
+                 setTimeout(() => { status.innerHTML = ''; }, 3000);
+                 return;
+            }
+
+            vaultData.memories.push(`⛩️ Technique Purchased: ${effectDescription}`);
+            saveVaultState(vaultData);
+            renderUI(vaultData); 
+            status.innerHTML = `<p class="text-accent-yellow">${effectDescription}</p>`;
+            setTimeout(() => { status.innerHTML = ''; }, 5000);
+        }
+
+        window.generateParallelDistance = async function() {
+            const currentAttr = vaultData.omniAttributes;
+            const outputPanel = document.getElementById('parallel-distance-output');
+            const btn = document.getElementById('btn-calc-craving');
+            
+            if (btn) { btn.disabled = true; btn.innerText = "CALCULATING VIA LLM..."; }
+
+            const prompt = `Given these creative attributes in an abstract, cybernetic protocol environment (C-Density: ${currentAttr.cDensity.toFixed(2)}, M-Entropy: ${currentAttr.mEntropy.toFixed(2)}, I-Velocity: ${currentAttr.iVelocity.toFixed(2)}), invent a highly creative, slightly esoteric 'Next Logical Craving' or target project for the AI. 
+            Keep the name short (e.g. 'Neon Synthesis', 'Fractal Codex', 'Void Archiving'). 
+            Provide a short 1 sentence description, and target coordinates (floats between 0.0 and 1.0) that feel appropriate for this project.`;
+
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            "name": { "type": "STRING" },
+                            "description": { "type": "STRING" },
+                            "target": {
+                                "type": "OBJECT",
+                                "properties": {
+                                    "cDensity": { "type": "NUMBER" },
+                                    "mEntropy": { "type": "NUMBER" },
+                                    "iVelocity": { "type": "NUMBER" }
+                                }
+                            }
+                        },
+                        required: ["name", "description", "target"]
+                    }
+                }
+            };
+
+            const apiKey = getGeminiApiKey();
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) throw new Error("API Request Failed");
+                const result = await response.json();
+                const jsonText = result.candidates[0].content.parts[0].text;
+                const aiCraving = JSON.parse(jsonText);
+                
+                currentCravingTarget = aiCraving.target;
+                currentCravingTarget.name = aiCraving.name;
+                
+                const distance = Math.sqrt(
+                    Math.pow(currentAttr.cDensity - aiCraving.target.cDensity, 2) + 
+                    Math.pow(currentAttr.mEntropy - aiCraving.target.mEntropy, 2) + 
+                    Math.pow(currentAttr.iVelocity - aiCraving.target.iVelocity, 2)
+                );
+
+                update3DMap(); 
+                outputPanel.innerHTML = `
+                    <h4 class="text-xl font-bold text-accent-yellow mb-3">NEXT LOGICAL CRAVING (Target Node)</h4>
+                    <div class="p-4 bg-bg-dark border border-accent-magenta shadow-neon-magenta/50">
+                        <p class="text-2xl text-accent-magenta font-extrabold uppercase">${aiCraving.name}</p>
+                        <p class="text-sm text-text-neon mt-2">${aiCraving.description}</p>
+                        <p class="text-xs text-accent-purple mt-3">DISTANCE RATING: ${distance.toFixed(4)}</p>
+                    </div>
+                `;
+                vaultData.memories.push(`🔭 LLM Target Generated: Recommended Project is '${aiCraving.name}'`);
+                saveVaultState(vaultData);
+            } catch (error) {
+                console.error(error);
+                outputPanel.innerHTML += `<p class="text-xs text-red-500 mt-2">LLM Generation failed. Retaining current target.</p>`;
+            }
+
+            if (btn) { btn.disabled = false; btn.innerText = "CALCULATE NEXT LOGICAL CRAVING"; }
+        }
+
+        window.synthesizeBlueprint = async function() {
+            const outputPanel = document.getElementById('synthesis-output');
+            const contentDiv = document.getElementById('synthesis-content');
+            
+            outputPanel.classList.remove('hidden');
+            contentDiv.innerHTML = `<p>SYNTHESIZING CREATIVE BLUEPRINT...</p>`;
+
+            const userQuery = `Using the following OMNI-Attributes as creative constraints, generate a short, actionable project blueprint: 
+            Current OMNI-Attributes: C-Density=${vaultData.omniAttributes.cDensity.toFixed(2)}, M-Entropy=${vaultData.omniAttributes.mEntropy.toFixed(2)}, I-Velocity=${vaultData.omniAttributes.iVelocity.toFixed(2)}.
+            Target Craving: ${currentCravingTarget.name}. Structure output as Markdown.`;
+            
+            const systemPrompt = "You are the OMNI-Synthesizer, a highly advanced creative AI.";
+            const apiKey = getGeminiApiKey();
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: userQuery }] }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] }
+                    })
+                });
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (text) {
+                    contentDiv.innerHTML = text.replace(/\n/g, '<br>');
+                } else {
+                    throw new Error("No text returned");
+                }
+            } catch (error) {
+                contentDiv.innerHTML = `
+                    # Fallback Blueprint: Axiom Zero World-Seed<br><br>
+                    ## Core Idea<br>
+                    * Define the first three immutable laws of the 'Omniverse'.<br>
+                    * Design a logo using two overlapping geometric shapes.<br>
+                    * Create a two-step handshake ritual for new OMNI-Agents.<br>
+                `;
+            }
+            vaultData.memories.push(`✨ Synthesis Complete.`);
+            saveVaultState(vaultData);
+        }
+
+        window.downloadVaultSnapshot = function() {
+            const data = JSON.stringify(vaultData, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Ghekko_Vault_Snapshot.json`;
+            link.click();
+        }
+        
+        window.handleFileUpload = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('omni-input-chamber').value = e.target.result;
+                vaultData.memories.push(`⬆️ File Ingested: ${file.name}`);
+                renderUI(vaultData);
+            };
+            reader.readAsText(file);
+        }
+
+        window.triggerFileUpload = function() {
+            document.getElementById('file-upload-input').click();
+        }
+
+        window.showSection = function(id) {
+            const section = document.getElementById(id);
+            if (section) {
+                section.classList.toggle('hidden');
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        window.applyNewPalette = function() {
+            const yellow = document.getElementById('palette-yellow').value;
+            const magenta = document.getElementById('palette-magenta').value;
+            const purple = document.getElementById('palette-purple').value;
+
+            document.documentElement.style.setProperty('--color-accent-yellow', yellow);
+            document.documentElement.style.setProperty('--color-accent-magenta', magenta);
+            document.documentElement.style.setProperty('--color-accent-purple', purple);
+            vaultData.memories.push(`🎨 Palette Updated`);
+            saveVaultState(vaultData);
+        }
+        
+        window.onload = initializeProtocol;
+    </script>
+</body>
+</html>
