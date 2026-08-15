@@ -1,5 +1,4 @@
-DEVFORGE PRO is an interactive, cyberpunk-themed personal vault/dashboard system (Ghekko OMNI-Protocol V3.1) built as a single-file HTML application. It's a multimedia processing platform that combines file analysis, 3D visualization, AI-powered synthesis, image generation, and a virtual economy system—designed for creative experimentation with LLM-powered features.
-Stack
+
 
     Language(s): HTML5 + Vanilla JavaScript
     Framework / runtime: Browser-based (Three.js for 3D, Tailwind CSS for UI)
